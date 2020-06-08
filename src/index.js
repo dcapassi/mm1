@@ -17,7 +17,7 @@ queueMM1 = (lambda, mu) => {
   let waited = []; // Bool para indicar se houve espera
   let count = 0; // Contador para loop
 
-  let stop = 10000; // Indica número de iterações
+  let stop = 50000; // Indica número de iterações
 
   for (count; count < stop; count++) {
     entry[count] = count;
@@ -86,7 +86,7 @@ queueMM1 = (lambda, mu) => {
 
 //Loop para rodar a simulação multiplas vezes
 let numberOfSimulations = 20;
-lambda = 0.07;
+lambda = 0.09;
 mu = 0.1;
 
 //Variaveis utilizadas para calculo do erro
@@ -94,6 +94,8 @@ let precisionTimeInQueue = 0;
 let precisionTimeInTheSystem = 0;
 let avgPrecisionTimeInQueue = 0;
 let avgPrecisionTimeInTheSystem = 0;
+let avgTimeInTheSytem = 0;
+let totalTimeInTheSystem = 0;
 let run = [];
 
 for (let i = 0; i < numberOfSimulations; i++) {
@@ -103,6 +105,9 @@ for (let i = 0; i < numberOfSimulations; i++) {
   console.log(`Execução[${i}]`);
   console.log(run[i]);
 
+  totalTimeInTheSystem =
+    totalTimeInTheSystem + parseFloat(run[i].avgTimeInSystem.simulated);
+    
   precisionTimeInQueue =
     precisionTimeInQueue + parseFloat(run[i].avgWaitingInQueue.precision);
 
@@ -111,6 +116,7 @@ for (let i = 0; i < numberOfSimulations; i++) {
 }
 
 try {
+  avgTimeInTheSytem = totalTimeInTheSystem / numberOfSimulations;
   avgPrecisionTimeInQueue = precisionTimeInQueue / numberOfSimulations;
   avgPrecisionTimeInTheSystem = precisionTimeInTheSystem / numberOfSimulations;
 } catch (error) {
@@ -125,4 +131,7 @@ console.log(
   `Erro do Tempo de Espera no Sistema:  ${avgPrecisionTimeInTheSystem.toFixed(
     5
   )}`
+);
+console.log(
+  `Média do Tempo de Espera no Sistema:  ${avgTimeInTheSytem.toFixed(5)}`
 );
