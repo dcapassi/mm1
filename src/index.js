@@ -15,7 +15,6 @@ queueMM1 = (lambda, mu) => {
   let totalWaitingInQueue = 0; //Soma de todos tempos na fila
   let totalTimeInSystem = 0; //Soma de todos tempos no sistema
   let waited = []; // Bool para indicar se houve espera
-  let totalCustomers = 0; // Total de clientes juntos no sistema
   let count = 0; // Contador para loop
 
   let stop = 10000; // Indica número de iterações
@@ -61,34 +60,10 @@ queueMM1 = (lambda, mu) => {
     }
   }
 
-  //Loop para verificação de usuários simultaneos no sistema;
-  //Cada entrada na fila verifica se houveram entradas posteriores que chegaram antes da finalização do serviço
-  //Assim cada entrada sabe o tamanho da fila em um dado momento;
-  let countJobs = [];
-  for (let i = 0; i < entry.length; i++) {
-    let count = 1;
-    for (let j = i; j < entry.length; j++) {
-      if (finishingTime[i] > arrivalTime[j + 1]) {
-        count = count + 1;
-      }
-    }
-    countJobs.push(count);
-    totalCustomers = totalCustomers + count;
-    count = 1;
-  }
-
   let avgWaitingInQueue = (totalWaitingInQueue / stop).toFixed(2);
   let avgTimeInSystem = (totalTimeInSystem / stop).toFixed(2);
-  let avgCustomersInSystem = (totalCustomers / stop).toFixed(2);
 
   return {
-    avgCustomersInSystem: {
-      simulated: avgCustomersInSystem,
-      calculated: (lambda / (mu - lambda)).toFixed(2),
-      precision: (avgCustomersInSystem / (lambda / (mu - lambda)) - 1).toFixed(
-        2
-      ),
-    },
     avgWaitingInQueue: {
       simulated: avgWaitingInQueue,
       calculated: (lambda / (mu * (mu - lambda))).toFixed(2),
@@ -111,14 +86,12 @@ queueMM1 = (lambda, mu) => {
 
 //Loop para rodar a simulação multiplas vezes
 let numberOfSimulations = 20;
-lambda = 0.09;
+lambda = 0.07;
 mu = 0.1;
 
 //Variaveis utilizadas para calculo do erro
-let precisionCustomerInSytem = 0;
 let precisionTimeInQueue = 0;
 let precisionTimeInTheSystem = 0;
-let avgPrecisionCustomerInSytem = 0;
 let avgPrecisionTimeInQueue = 0;
 let avgPrecisionTimeInTheSystem = 0;
 let run = [];
@@ -130,10 +103,6 @@ for (let i = 0; i < numberOfSimulations; i++) {
   console.log(`Execução[${i}]`);
   console.log(run[i]);
 
-  precisionCustomerInSytem =
-    precisionCustomerInSytem +
-    parseFloat(run[i].avgCustomersInSystem.precision);
-
   precisionTimeInQueue =
     precisionTimeInQueue + parseFloat(run[i].avgWaitingInQueue.precision);
 
@@ -142,23 +111,18 @@ for (let i = 0; i < numberOfSimulations; i++) {
 }
 
 try {
-  avgPrecisionCustomerInSytem = precisionCustomerInSytem / numberOfSimulations;
   avgPrecisionTimeInQueue = precisionTimeInQueue / numberOfSimulations;
   avgPrecisionTimeInTheSystem = precisionTimeInTheSystem / numberOfSimulations;
 } catch (error) {
   console.log(error);
 }
 console.log(`------:`);
+
 console.log(
-  `Erro da Quantidade de Clientes no Sistema:  ${avgPrecisionCustomerInSytem.toFixed(
-    2
-  )}`
-);
-console.log(
-  `Erro do Tempo de Espera na Fila:  ${avgPrecisionTimeInQueue.toFixed(2)}`
+  `Erro do Tempo de Espera na Fila:  ${avgPrecisionTimeInQueue.toFixed(5)}`
 );
 console.log(
   `Erro do Tempo de Espera no Sistema:  ${avgPrecisionTimeInTheSystem.toFixed(
-    2
+    5
   )}`
 );
